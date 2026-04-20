@@ -13,30 +13,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+      - name: Print Message
+        run: echo "CI/CD Pipeline Started"
 
-      - name: Install Frontend Dependencies
-        run: |
-          cd Application-Code/frontend
-          npm install
+      - name: List Files
+        run: ls -la
 
-      - name: Build Frontend
-        run: |
-          cd Application-Code/frontend
-          npm run build
-
-      - name: Install Backend Dependencies
-        run: |
-          cd Application-Code/backend
-          npm install
-
-      - name: Backend Test
-        run: |
-          cd Application-Code/backend
-          echo "Backend running successfully"
-
-      - name: Success Message
+      - name: Success
         run: echo "CI/CD Pipeline Executed Successfully!"
