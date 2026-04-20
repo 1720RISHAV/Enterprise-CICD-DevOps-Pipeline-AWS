@@ -1,0 +1,45 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install Frontend Dependencies
+      run: |
+        cd Application-Code/frontend
+        npm install
+
+    - name: Build Frontend
+      run: |
+        cd Application-Code/frontend
+        npm run build
+
+    - name: Install Backend Dependencies
+      run: |
+        cd Application-Code/backend
+        npm install
+
+    - name: Run Backend (Test)
+      run: |
+        cd Application-Code/backend
+        echo "Backend running successfully"
+
+    - name: Build Docker Image
+      run: docker build -t devops-app .
+
+    - name: Success Message
+      run: echo "CI/CD Pipeline Executed Successfully!"

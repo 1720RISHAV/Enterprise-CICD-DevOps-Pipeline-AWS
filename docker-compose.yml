@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./Application-Code/frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:3500
+
+  backend:
+    build: ./Application-Code/backend
+    ports:
+      - "3500:3500"
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/taskdb
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
