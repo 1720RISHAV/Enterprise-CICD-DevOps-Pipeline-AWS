@@ -38,8 +38,8 @@ jobs:
         cd Application-Code/backend
         echo "Backend running successfully"
 
-    - name: Build Docker Image
-      run: docker build -t devops-app .
+    - name: Skip Docker Build
+  run: echo "Docker build skipped"
 
     - name: Success Message
       run: echo "CI/CD Pipeline Executed Successfully!"

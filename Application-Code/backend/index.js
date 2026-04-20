@@ -1,46 +1,65 @@
-const tasks = require("./routes/tasks");
-const connection = require("./db");
-const cors = require("cors");
 const express = require("express");
+const cors = require("cors");
+
 const app = express();
-const mongoose = require('mongoose');
-
-connection();
-
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 
-// Health check endpoints
+let pipelines = [];
 
-// Basic health check to see if the server is running
-app.get('/healthz', (req, res) => {
-    res.status(200).send('Healthy');
+app.get("/", (req, res) => {
+  res.send("DevOps Pipeline Backend Running");
 });
 
-let lastReadyState = null;  
-// Readiness check to see if the server is ready to serve requests
-app.get('/ready', (req, res) => {
-    // Here you can add logic to check database connection or other dependencies
-    const isDbConnected = mongoose.connection.readyState === 1;
-    if (isDbConnected !== lastReadyState) {
-        console.log(`Database readyState: ${mongoose.connection.readyState}`);
-        lastReadyState = isDbConnected;
-    }
-    
-    if (isDbConnected) {
-        res.status(200).send('Ready');
-    } else {
-        res.status(503).send('Not Ready');
-    }
+// Run pipeline
+app.post("/run-pipeline", (req, res) => {
+  const { name } = req.body;
+
+  const pipeline = {
+    id: pipelines.length + 1,
+    name,
+    stage: "Code",
+    status: "running",
+    logs: ["Pipeline started..."],
+  };
+
+  pipelines.push(pipeline);
+
+  // Simulate pipeline stages
+  setTimeout(() => {
+    pipeline.stage = "Build";
+    pipeline.logs.push("Build started...");
+  }, 2000);
+
+  setTimeout(() => {
+    pipeline.stage = "Test";
+    pipeline.logs.push("Testing application...");
+  }, 4000);
+
+  setTimeout(() => {
+    pipeline.stage = "Deploy";
+    pipeline.logs.push("Deploying to server...");
+  }, 6000);
+
+  setTimeout(() => {
+    pipeline.status = "success";
+    pipeline.logs.push("Deployment successful!");
+  }, 8000);
+
+  res.json(pipeline);
 });
 
-// Startup check to ensure the server has started correctly
-app.get('/started', (req, res) => {
-    // Assuming the server has started correctly if this endpoint is reachable
-    res.status(200).send('Started');
+// Get all pipelines
+app.get("/pipelines", (req, res) => {
+  res.json(pipelines);
 });
 
-app.use("/api/tasks", tasks);
+// Get logs
+app.get("/logs/:id", (req, res) => {
+  const pipeline = pipelines.find(p => p.id == req.params.id);
+  res.json(pipeline ? pipeline.logs : []);
+});
 
-const port = process.env.PORT || 3500;
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+app.listen(3500, () => {
+  console.log("Server running on port 3500");
+});
